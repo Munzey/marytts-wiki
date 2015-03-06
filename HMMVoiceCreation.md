@@ -27,6 +27,7 @@ If you have already installed some of the required programs, please include thei
 This script generates a $MARY_BASE/lib/external/externalBinaries.config file that will be used by the Voice import tools to locate the necessary external programs.
 
 The necessary programs that this script checks are:
+
 **Common tools**
 * awk normally available in linux  
 * perl normally available in linux  
