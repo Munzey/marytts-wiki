@@ -26,23 +26,114 @@ If you have already installed some of the required programs, please include thei
 
 This script generates a $MARY_BASE/lib/external/externalBinaries.config file that will be used by the Voice import tools to locate the necessary external programs.
 
-The necessary programs that this script checks are:  
-**HTS requirements:**  
-* [HTS-2.2_for_HTK-3.4.1.patch ](http://hts.sp.nitech.ac.jp/archives/2.2/HTS-2.2_for_HTK-3.4.1.tar.bz2)  
-* HTK-3.4.1 and HDecode patched with HTS-2.2_for_HTK-3.4.1.patch links:  
-* [HTK-3.4.1](http://htk.eng.cam.ac.uk/ftp/software/HTK-3.4.1.tar.gz) (you will need to register first)  
-* [HDecode](http://htk.eng.cam.ac.uk/prot-docs/hdecode.shtml) (you will need to register first)  
-* [SPTK-3.4.1](http://downloads.sourceforge.net/sp-tk/SPTK-3.4.1.tar.gz)  
-* [hts_engine_API-1.05](http://downloads.sourceforge.net/hts-engine/hts_engine_API-1.05.tar.gz)  
-
-**Other requirements:**  
+The necessary programs that this script checks are:
+**Common tools**
 * awk normally available in linux  
 * perl normally available in linux  
-* bc normally available in linux  
-* sox, v13.0 or greater [SoX](http://sox.sourceforge.net/), normally available in linux.  
+* bc normally available in linux 
 * tcl supporting snack, for example [ActiveTcl](http://www.activestate.com/Products/ActiveTcl/). Note that only ActiveTcl 8.4 includes snack; 8.5+ requires manual installation.  
-* [snack](http://www.speech.kth.se/snack/download.html) library for tcl.  
-* EHMM for automatic labeling, available with [festvox-2.1](http://festvox.org/download.html)  
+* [snack](http://www.speech.kth.se/snack/download.html) library for tcl (available from the Ubuntu/Debian repositories under [libsnack2-dev](http://packages.ubuntu.com/trusty/libsnack2-dev) or [tcl-snack-dev](http://packages.ubuntu.com/trusty/tcl-snack-dev)) 
+* [sox](http://sox.sourceforge.net/), v13.0 or greater (normally available from common Ubuntu/Debian repositories)
+
+**Tools that require manual installation** 
+* HTK-3.4.1 and HDecode patched with HTS-2.2_for_HTK-3.4.1.patch: 
+    * [HTK-3.4.1](http://htk.eng.cam.ac.uk/ftp/software/HTK-3.4.1.tar.gz) (you will need to register first)  
+    * [HDecode](http://htk.eng.cam.ac.uk/prot-docs/hdecode.shtml) (you will need to register first)  
+    * [HTS-2.2_for_HTK-3.4.1](http://hts.sp.nitech.ac.jp/archives/2.2/HTS-2.2_for_HTK-3.4.1.tar.bz2)
+* [SPTK-3.4.1](http://downloads.sourceforge.net/sp-tk/SPTK-3.4.1.tar.gz)  
+* [hts_engine_API-1.05](http://downloads.sourceforge.net/hts-engine/hts_engine_API-1.05.tar.gz)  
+* EHMM, available in ``$MARYBASE/lib/external/ehmm.tar.gz`, or with Festvox version 2.1 or newer: ​http://festvox.org/download.html
+
+**Installation instructions**
+
+All tools that require manual installation must be extracted, compiled and installed using the standard ``./configure``, ``make``, ``sudo make install`` workflow. 
+Before you start building the tools, make sure the following programs and libraries are installed on your system, since they are needed during the compilation process:
+* gcc, g++
+* libc6 (libc6-i368 if you're on a 64-bit system)
+
+In order to compile and install the patched HTK tools, first extract the [HTK-3.4.1](http://htk.eng.cam.ac.uk/ftp/software/HTK-3.4.1.tar.gz) archive as follows:
+
+    $ tar -zxvf /path/to/HTK-3.4.1.tar.gz
+    
+Then, staying in the same working directory, extract the [HDecode](http://htk.eng.cam.ac.uk/prot-docs/hdecode.shtml) archive "on top", then switch to the ``htk`` directory, which now contains the HTK and HDecode sources:
+
+    $ tar -zxvf /path/to/HDecode-3.4.1.tar.gz
+    $ cd htk
+    
+Now, extract and apply the .patch file from the [HTS-2.2_for_HTK-3.4.1](http://hts.sp.nitech.ac.jp/archives/2.2/HTS-2.2_for_HTK-3.4.1.tar.bz2) archive:
+
+    $ tar -zxvf /path/to/HTS-2.2_for_HTK-3.4.1.tar.bz2 HTS-2.2_for_HTK-3.4.1.patch
+    $ patch -p0 --strip=1 < HTS-2.2_for_HTK-3.4.1.patch
+    
+The HTK tools are now ready to be compiled and installed. It is important that all binaries produced during the build process are copied to a known location that can then either be passed as an argument to the aforementioned ``check_install_external_programs.sh`` script or simply added to the system's ``$PATH``. The easiest way to ensure this is to pass a path to the ``configure`` script using the ``--prefix`` option and making sure the ``bin`` directory under that path is contained in the system's ``$PATH`` variable. This can be achived as follows:
+
+    $ export PATH=$PATH:/path/to/external/programs/bin
+    $ ./configure --prefix=/path/to/external/programs
+    
+Once the configuration completes successfully, you can run ``make`` to compile the HTK tools. If you encounter errors during the compilation process, try re-running the ``configure`` script with the option ``--disable-hslab``, then run ``make`` again.
+
+Run ``make install`` to copy the binaries to the specified path.
+
+The procedure is very similar for the remaining tools ([SPTK-3.4.1](http://downloads.sourceforge.net/sp-tk/SPTK-3.4.1.tar.gz),[hts_engine_API-1.05](http://downloads.sourceforge.net/hts-engine/hts_engine_API-1.05.tar.gz) and EHMM): extract the archives, ``configure`` using the same path for the ``--prefix`` option, ``make`` and finally ``make install``. 
+
+Keep in mind that, depending on the write permissions of the destination directory, you may need root privileges to successfully run ``make install``.
+
+Once all tools have been installed successfully, (re-)run ``check_install_external_programs.sh check`` and verify that the output looks something like this (the paths will be different on your system, of course):
+
+    MARY_BASE=/home/julian/tts/marytts
+
+    awk: /usr/bin/awk
+    ok
+
+    perl: /usr/bin/perl 
+    ok
+
+    tclsh: /usr/bin/tclsh 
+    tclsh was found and supports snack
+    ok
+
+    bc: /usr/bin/bc
+    bc: checking -l (mathlib)
+    ok
+
+    sox: /usr/bin/sox
+    ok
+
+    HTK HHEd exists
+    HTK version: 3.4.1
+    HTK HHED contains HTS commands like CM 
+    HTK ok
+
+    hts_engine exists
+    hts_engine: /home/julian/usr/bin/hts_engine
+    ok
+
+    SPTK mgcep exists
+    SPTK mgcep: /home/julian/usr/bin/mgcep
+    SPTK gmm exist, SPTK version >= 3.2
+    ok
+
+    festvox ehmm exists
+    festvox ehmm: /home/julian/tts/marytts/lib/external/ehmm/bin/ehmm
+    ehmm exist
+    ok
+
+    ________________________________________________________________
+    Programs status (detailed information above):
+    The following paths should be in the PATH variable
+      awk: /usr/bin
+      perl: /usr/bin
+      bc: /usr/bin
+    The following paths are used when running HMMVoiceConfigure
+      tclsh: /usr/bin
+      sox: /usr/bin
+      hts/htk: /usr/local/bin
+      hts_engine: /home/julian/usr/bin
+      sptk: /home/julian/usr/bin
+    This path is used when running the EHMMlabeler
+      ehmm: /home/julian/tts/marytts/lib/external/ehmm/bin
+
+    List of paths in: /home/julian/tts/marytts/lib/external/externalBinaries.config
 
 **Mac-specific notes:**
 
@@ -76,9 +167,9 @@ And run the following components:
 
 2- Run the **EHMMlabeler** to label automatically the wav files using the corresponding transcriptions. If the pauses at the beginning and end of your recordings are longer than 0.2 seconds, you might consider to reduce these pauses using the tool: Convert recorded audio (as explained in NewLanguageSupport No. 9) to trim initial and final silences.
 
-The EHMMLabeler procedure might take several hours. For running EHMMLabeler, please use the settings editor of this component to set, according to your festvox installation, the variable:
+The EHMMLabeler procedure might take several hours. For running EHMMLabeler, please use the settings editor of this component to set the ``EHMMLabeler.ehmm`` variable to the path containing your ``ehmm`` binary:
 
-    EHMMLabeler.ehmm  = ../festvox/src/ehmm/bin/
+    EHMMLabeler.ehmm  = ../path/containing/ehmm/
 
 The result of this step is a ehmm/lab directory.
 
