@@ -1,13 +1,13 @@
 # Install MaryTTS to a local server
 
-This recipe documents how to install MaryTTS to a local server, e.g., for projects relying on a TTS service or enterprise-wide deployment.
+This documents how to install MaryTTS to a local server.
 
 ## Preliminaries
 
-In this recipe, we will use MaryTTS v5.1-beta2 on a vanilla Ubuntu 12.4.4 LTS server.
+This documentation assumes the use of a Ubuntu server.
 We will create a dedicated service account named `mary` to manage the installation files and run the service.
-Moreover, we will place the MaryTTS installation in `/local/mary/marytts` and serve the documentation from `/local/mary/www`.
-The MaryTTS server itself will run on the default port 59125.
+We will place the MaryTTS installation in `/local/mary/marytts` and serve the documentation from `/local/mary/www`.
+The MaryTTS server itself will run on the default port 59125. [localhost59125](http://localhost:59125/)
 
 ```bash
 $ sudo useradd -m -r mary
@@ -17,14 +17,12 @@ $ sudo chown mary:mary /local/mary
 
 ## Download the MaryTTS source code
 
-The best way to obtain the source code is to clone it from GitHub using `git` (which might need to be installed first).
+The best way to obtain the source code is to clone it from GitHub using `git`. For this you will need a git account which you can create easily on the [github.com](https://github.com/) website. You will also need to install git (if you haven't already)
 
 ```bash
 $ sudo apt-get install -y git
 $ sudo -u mary git clone https://github.com/marytts/marytts.git /local/mary/marytts
 $ cd /local/mary/marytts
-$ sudo -u mary git fetch --tags
-$ sudo -u mary git checkout v5.1beta2
 ```
 
 ## Build MaryTTS
@@ -38,6 +36,7 @@ $ sudo -u mary mvn package
 
 ## Build MaryTTS website (optional)
 
+This is not required to build a mary voice.
 The MaryTTS artifacts need to be installed in the local Maven repository first.
 
 ```bash
