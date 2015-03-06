@@ -29,9 +29,9 @@ This script generates a $MARY_BASE/lib/external/externalBinaries.config file tha
 The necessary programs that this script checks are:
 
 **Common tools**
-* awk normally available in linux  
-* perl normally available in linux  
-* bc normally available in linux 
+* awk (normally available in linux)
+* perl (normally available in linux)
+* bc (normally available in linux) 
 * tcl supporting snack, for example [ActiveTcl](http://www.activestate.com/Products/ActiveTcl/). Note that only ActiveTcl 8.4 includes snack; 8.5+ requires manual installation.  
 * [snack](http://www.speech.kth.se/snack/download.html) library for tcl (available from the Ubuntu/Debian repositories under [libsnack2-dev](http://packages.ubuntu.com/trusty/libsnack2-dev) or [tcl-snack-dev](http://packages.ubuntu.com/trusty/tcl-snack-dev)) 
 * [sox](http://sox.sourceforge.net/), v13.0 or greater (normally available from common Ubuntu/Debian repositories)
