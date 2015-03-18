@@ -32,7 +32,7 @@ The necessary programs that this script checks are:
 * awk (normally available in linux)
 * perl (normally available in linux)
 * bc (normally available in linux) 
-* tcl supporting snack, for example [ActiveTcl](http://www.activestate.com/Products/ActiveTcl/). Note that only ActiveTcl 8.4 includes snack; 8.5+ requires manual installation.  
+* tcl supporting snack (available from the Ubuntu/Debian repositories under [tcl](http://packages.ubuntu.com/trusty/tcl))
 * [snack](http://www.speech.kth.se/snack/download.html) library for tcl (available from the Ubuntu/Debian repositories under [libsnack2-dev](http://packages.ubuntu.com/trusty/libsnack2-dev) or [tcl-snack-dev](http://packages.ubuntu.com/trusty/tcl-snack-dev)) 
 * [sox](http://sox.sourceforge.net/), v13.0 or greater (normally available from common Ubuntu/Debian repositories)
 
@@ -75,9 +75,14 @@ Once the configuration completes successfully, you can run ``make`` to compile t
 
 Run ``make install`` to copy the binaries to the specified path.
 
-The procedure is very similar for the remaining tools ([SPTK-3.4.1](http://downloads.sourceforge.net/sp-tk/SPTK-3.4.1.tar.gz),[hts_engine_API-1.05](http://downloads.sourceforge.net/hts-engine/hts_engine_API-1.05.tar.gz) and EHMM): extract the archives, ``configure`` using the same path for the ``--prefix`` option, ``make`` and finally ``make install``. 
+The procedure is very similar for [SPTK-3.4.1](http://downloads.sourceforge.net/sp-tk/SPTK-3.4.1.tar.gz) and [hts_engine_API-1.05](http://downloads.sourceforge.net/hts-engine/hts_engine_API-1.05.tar.gz): extract the archives, ``configure`` using the same path for the ``--prefix`` option, ``make`` and finally ``make install``. 
 
 Keep in mind that, depending on the write permissions of the destination directory, you may need root privileges to successfully run ``make install``.
+
+Finally, install EHMM by extracting the sources, running ``make`` and adding the resulting binaries to your path:
+
+    $ make
+    $ export PATH=$PATH:/path/to/ehmm/bin
 
 Once all tools have been installed successfully, (re-)run ``check_install_external_programs.sh check`` and verify that the output looks something like this (the paths will be different on your system, of course):
 
@@ -156,46 +161,8 @@ In addition to the above comments, the following notes may be helpful to get the
 ***
 
 ##<a name="stepIII" /> III. Preparing data for training a HMM-voice
-In your voice building directory execute the step-by-step procedure in [VoiceImportToolsTutorial](http://mary.opendfki.de/wiki/VoiceImportToolsTutorial) to make sure that the data, sound (wav) and text files are in the correct place and format. As a result of this step your voice building directory should contain a wav and text directories. 
 
-In your voice building directory run the voice import tools:
-
-    $MARY_BASE/target/marytts-builder-<VERSION>/bin/voiceimport.sh
-
-And run the following components:
-
-1- Run the **AllophonesExtractor** to create the prompt_allophones directory required in the next step. This component requires the MARY server.
-
-2- Run the **EHMMlabeler** to label automatically the wav files using the corresponding transcriptions. If the pauses at the beginning and end of your recordings are longer than 0.2 seconds, you might consider to reduce these pauses using the tool: Convert recorded audio (as explained in NewLanguageSupport No. 9) to trim initial and final silences.
-
-The EHMMLabeler procedure might take several hours. For running EHMMLabeler, please use the settings editor of this component to set the ``EHMMLabeler.ehmm`` variable to the path containing your ``ehmm`` binary:
-
-    EHMMLabeler.ehmm  = ../path/containing/ehmm/
-
-The result of this step is a ehmm/lab directory.
-
-3- Run the **LabelPauseDeleter**. Please use the settings editor of this component to set the variable:
-
-    LabelPauseDeleter.threshold  =  10
-
-The result of this step is a lab directory.
-
-4- Run the **PhoneUnitLabelComputer**, this procedure has as input the lab directory and will create as an output the phonelab directory.
-
-5- Run the **TranscriptionAligner**, this program will create the allophones directory.
-
-6- Run the **FeatureSelection**, this program will create a mary/features.txt file, it requires the MARY server running. Select here all the features and save the file.
-
-7- Run the **PhoneUnitFeatureComputer**, to extract context feature vectors from the text data. This procedure will create a phonefeatures directory. For running this component the MARY server should be running as well.
-
-8- Run the **PhonelabelFeatureAligner**, this procedure will verify alignment between "phonefeatures" and "phonelabels".
-
-As a result of previous steps you should have in your voice building directory:
-
-    phonefeatures directory
-    phonelab directory
-    mary/features.txt file
-    $MARY_BASE/lib/external/externalBinaries.config 
+See the [VoiceImportTools](VoiceImportToolsTutorial.md) page for instructions.
 
 ***
 ##<a name="stepIV" /> IV. Training a HMM-voice
